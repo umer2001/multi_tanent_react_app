@@ -1,50 +1,82 @@
-# React + TypeScript + Vite
+# Multi-Tenant React Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A scalable multi-tenant React application with dynamic domain management using Caddy, Nginx, and Docker. This setup allows for automatic SSL/TLS certificate management and secure domain addition through an API.
 
-Currently, two official plugins are available:
+## Architecture
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Overview
+The application uses a three-tier architecture:
 
-## Expanding the ESLint configuration
+1. **Frontend (React)**
+   - Single-page application built with React + TypeScript
+   - Multi-tenant support through context-based tenant detection
+   - Dynamic theming and configuration per tenant
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+2. **Proxy Layer**
+   - **Caddy**: Primary reverse proxy and SSL/TLS manager
+     - Automatic HTTPS certificate management
+     - Dynamic domain configuration through API
+   - **Nginx**: Security middleware
+     - API authentication for Caddy management
+     - Static file serving for React app
 
-- Configure the top-level `parserOptions` property like this:
+3. **Infrastructure**
+   - Docker-based containerization
+   - Docker Compose for service orchestration
+   - Volume-based persistence for certificates and configurations
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### Security Flow
+
+
+## Features
+
+- 🔐 Automatic HTTPS for all domains
+- 🌐 Dynamic domain addition through API
+- 🔒 Secured API endpoints
+- 🎨 Per-tenant theming and configuration
+- 🚀 Hot Module Replacement (HMR)
+- 📦 Docker-based deployment
+
+## Prerequisites
+
+- Docker and Docker Compose
+- Node.js (for local development)
+- Domain names pointing to your server
+
+## Quick Start
+
+1. Clone the repository:
+
+```bash
+git clone <repository-url>
+cd multi-tenant-react-app
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+2. Create `.env` file:
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+```bash
+cp .env.example .env
+```
+CADDY_API_KEY=your-secure-api-key-here
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+3. Build and start the services:
+
+```bash
+docker-compose up --build
+```
+
+4. Add a new tenant:
+To add a new domain, make an API request to the Caddy server:
+
+```bash
+  curl -X POST http://your-server:8080/api/caddy/config/apps/http/servers/srv0/routes \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: your-secure-api-key-here" \
+  -d '{
+  "match": [{"host": ["newdomain.com"]}],
+  "handle": [{
+  "handler": "reverse_proxy",
+  "upstreams": [{"dial": "react-app:80"}]
+  }]
+  }'
 ```
