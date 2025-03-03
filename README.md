@@ -86,8 +86,8 @@ To add a new domain, make an API request to the Caddy server:
             "response": {
                 "set": {
                     "Set-Cookie": [
-                        "store_name=test-store; Path=/; HttpOnly; Secure; SameSite=Strict",
-                        "store_metadata={\"store_name\":\"Test Store\",\"store_id\":\"123\"}; Path=/; HttpOnly; Secure; SameSite=Strict"
+                        "store_name=test-store; Path=/; Secure; SameSite=Strict",
+                        "store_metadata={\"store_name\":\"Test Store\",\"store_id\":\"123\"}; Path=/; Secure; SameSite=Strict"
                     ]
                 }
             }
