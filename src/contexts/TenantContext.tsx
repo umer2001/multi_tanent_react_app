@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { CookieJar } from "cookiejar";
+import Cookies from "js-cookie";
 import type { Tenant } from "../types/tenant";
 
 interface TenantContextType {
@@ -19,19 +19,13 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const detectTenant = async () => {
       try {
-        const cookies = new CookieJar();
-        const storeName = cookies.getCookie("store_name", {
-          domain: window.location.hostname,
-          path: "/",
-          secure: true,
-          script: false,
-        });
+        const storeName = Cookies.get("store_name");
         const hostname = window.location.hostname;
 
         // Mock tenant data - replace with actual API call
         setTenant({
           domain: hostname,
-          name: storeName?.value ?? hostname.split(".")[0],
+          name: storeName ?? hostname.split(".")[0],
           theme: {
             primary: "#646cff",
             secondary: "#535bf2",
