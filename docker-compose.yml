@@ -9,31 +9,36 @@ services:
       - ./dist:/usr/share/nginx/html
     networks:
       - app-network
+    expose:
+      - 3000
 
   nginx:
     image: nginx:alpine
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
-    environment:
-      - CADDY_API_KEY=${CADDY_API_KEY}
     networks:
       - app-network
-    ports:
-      - "8080:80"
+    expose:
+      - 80
 
   caddy:
-    image: caddy:2
+    image: caddy/caddy:2-builder
+    build:
+      dockerfile: Dockerfile-caddy
+      context: .
     volumes:
       - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
+    command: ["caddy", "run", "--resume", "--config", "/etc/caddy/Caddyfile"]
     networks:
       - app-network
     ports:
       - "80:80"
       - "443:443"
-      - "2019:2019" # Admin API port
+    expose:
+      - 2019
     depends_on:
       - nginx
 

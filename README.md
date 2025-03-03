@@ -69,14 +69,38 @@ docker-compose up --build
 To add a new domain, make an API request to the Caddy server:
 
 ```bash
-  curl -X POST http://your-server:8080/api/caddy/config/apps/http/servers/srv0/routes \
-  -H "Content-Type: application/json" \
-  -H "X-API-Key: your-secure-api-key-here" \
-  -d '{
-  "match": [{"host": ["newdomain.com"]}],
-  "handle": [{
-  "handler": "reverse_proxy",
-  "upstreams": [{"dial": "react-app:80"}]
-  }]
-  }'
+  curl --location 'http://glow.zaviago.com/api/caddy/config/apps/http/servers/srv0/routes' \
+--header 'Content-Type: application/json' \
+--header 'X-API-Key: sss-sbsbsmnmnsm-sjhgddjhhdj' \
+--data '{
+    "match": [
+        {
+            "host": [
+                "test.zaviago.com"
+            ]
+        }
+    ],
+    "handle": [
+        {
+            "handler": "headers",
+            "response": {
+                "set": {
+                    "Set-Cookie": [
+                        "store_name=test-store; Path=/; HttpOnly; Secure; SameSite=Strict",
+                        "store_metadata={\"store_name\":\"Test Store\",\"store_id\":\"123\"}; Path=/; HttpOnly; Secure; SameSite=Strict"
+                    ]
+                }
+            }
+        },
+        {
+            "handler": "reverse_proxy",
+            "upstreams": [
+                {
+                    "dial": "react-app:3000"
+                }
+            ]
+        }
+    ],
+    "terminal": true
+}'
 ```

@@ -1,7 +1,31 @@
 {
     admin 0.0.0.0:2019
+
+    # Add DNS challenge configuration
+    acme_dns cloudflare "<CLOUDFLARE_API_TOKEN>"
+
+    # Configure storage for config persistence
+    storage file_system {
+        root /config
+    }
 }
 
-:80 {
-    reverse_proxy react-app:80
+# Handle all subdomains of glow.zaviago.com
+*.glow.zaviago.com {
+    tls {
+        dns cloudflare "<CLOUDFLARE_API_TOKEN>"
+    }
+
+    reverse_proxy react-app:3000
+}
+
+# Handle the main domain
+glow.zaviago.com {
+    # API requests go to nginx
+    handle /api/* {
+        reverse_proxy nginx:80
+    }
+
+    # Main domain could serve a different app or redirect
+    respond "API Server" 200
 } 
