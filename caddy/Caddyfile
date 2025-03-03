@@ -26,6 +26,14 @@ glow.zaviago.com {
         reverse_proxy nginx:80
     }
 
+    @line_callback path /line/callback
+    handle @line_callback {
+        # Extract query parameters using placeholders
+        redir https://{query.original_domain}/auth/line/callback?code={query.code}&state={query.state} 302 {
+            if {query.original_domain} not ""
+        }
+    }
+
     # Main domain could serve a different app or redirect
     respond "API Server" 200
 } 
