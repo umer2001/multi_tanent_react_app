@@ -73,6 +73,7 @@ To add a new domain, make an API request to the Caddy server:
 --header 'Content-Type: application/json' \
 --header 'X-API-Key: sss-sbsbsmnmnsm-sjhgddjhhdj' \
 --data '{
+    "@id": "test.zaviago.com",
     "match": [
         {
             "host": [
@@ -103,4 +104,12 @@ To add a new domain, make an API request to the Caddy server:
     ],
     "terminal": true
 }'
+```
+
+5. Delete a tenant:
+
+```bash
+curl --location --request DELETE 'http://glow.zaviago.com/api/caddy/id/test.zaviago.com' \
+--header 'Content-Type: application/json' \
+--header 'X-API-Key: sss-sbsbsmnmnsm-sjhgddjhhdj'
 ```
